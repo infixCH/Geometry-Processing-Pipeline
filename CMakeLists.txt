@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(external/OpenMesh)
 include_directories(${OPENMESH_INCLUDE_DIRS})
 
-
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use OpenGL GLFW"    ON)
 option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)

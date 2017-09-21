@@ -9,8 +9,10 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     ProcessVisualizer::ProcessVisualizer(GeometryProcessor &p,
                                          std::string windowTitel,
-                                         std::string guiGroupTitel) :
-            mProcessor(p), mViewer(windowTitel, guiGroupTitel){
+                                         std::string guiGroupTitel) : mProcessor(p){
+        mViewer.setWindowTitel(windowTitel);
+        mViewer.setGroupTitel(guiGroupTitel);
+
         for (auto stageIter = p.mStages.begin(); stageIter != p.mStages.end(); ++stageIter){
             std::shared_ptr<Stage> s = *stageIter;
 

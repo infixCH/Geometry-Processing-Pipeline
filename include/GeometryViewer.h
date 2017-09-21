@@ -21,12 +21,17 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         // TODO(d) might be possible to construct viewer with GUI elements already
         std::vector<std::string> mLabels;
         std::vector<std::function<void()>> mCallbacks;
+        std::string mWindowTitel;
+        std::string mGroupTitel;
+
 
         void addAllButtons(igl::viewer::Viewer &v);
 
     public:
-        GeometryViewer(std::string &windowTitel, std::string &groupTitel);
+        GeometryViewer();
 
+        void setWindowTitel(std::string windowTitel);
+        void setGroupTitel(std::string groupTitel);
         void addButton(std::string label, std::function<void()> callback);
 
         void displayObject(Geometry g, Eigen::MatrixXd weights);

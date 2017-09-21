@@ -7,12 +7,15 @@
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
-    GeometryViewer::GeometryViewer(std::string &windowTitel, std::string &groupTitel) {
-        mViewer.callback_init = [&](igl::viewer::Viewer v){
+    GeometryViewer::GeometryViewer() {
+        mWindowTitel = "Window";
+        mGroupTitel = "Group";
+
+        mViewer.callback_init = [&](igl::viewer::Viewer &v){
             // TODO(d) comment for disposing default window
             v.ngui->window()->dispose();
-            v.ngui->addWindow(Eigen::Vector2i(220,10),windowTitel);
-            v.ngui->addGroup(groupTitel);
+            v.ngui->addWindow(Eigen::Vector2i(220,10),mWindowTitel);
+            v.ngui->addGroup(mGroupTitel);
 
             addAllButtons(v);
 
@@ -20,6 +23,14 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
             return false;
         };
+    }
+
+    void GeometryViewer::setWindowTitel(std::string windowTitel) {
+        mWindowTitel = windowTitel;
+    }
+
+    void GeometryViewer::setGroupTitel(std::string groupTitel) {
+        mGroupTitel = groupTitel;
     }
 
     void GeometryViewer::addAllButtons(igl::viewer::Viewer &v) {
