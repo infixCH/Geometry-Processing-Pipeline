@@ -15,7 +15,11 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/external/libigl/shared/cmake" "libigl")
 include_directories(${LIBIGL_INCLUDE_DIRS})
 add_definitions(${LIBIGL_DEFINITIONS})
 
-set(GPP_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include PARENT_SCOPE)
+set(GPP_INCLUDE_DIRS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${LIBIGL_INCLUDE_DIRS}
+        ${OPENMESH_INCLUDE_DIRS}
+        PARENT_SCOPE)
 
 set(SOURCE_FILES
         GeometryViewer.cpp
@@ -39,6 +43,7 @@ set(SOURCE_FILES
         include/GeometryHelpers.h)
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
+
 target_link_libraries(${PROJECT_NAME}
         ${LIBIGL_LIBRARIES}
         ${LIBIGL_VIEWER_EXTRA_LIBRARIES}

@@ -19,8 +19,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     public:
         ProcessVisualizer(GeometryProcessor &p,
-                          std::string &windowTitel,
-                          std::string &guiGroupTitel);
+                          std::string windowTitel,
+                          std::string guiGroupTitel);
 
         void addEntries(const std::vector<GUIEntry> &entries);
         void addButton(int entryNumber, const GUIEntry &entry);
