@@ -6,22 +6,22 @@
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
-    void Stage::execute(const Geometry &g) {
+    void AbstractStage::execute(const Geometry &g) {
         mOutputGeometry = g;
         mInputGeometry = g;
         processGeometry();
         createGUIElements();
     }
 
-    std::string Stage::getMessage() {
+    std::string AbstractStage::getMessage() {
         return mMessage;
     }
 
-    const std::vector<GUIEntry>& Stage::getGUIEntries() const {
+    const std::vector<GUIEntry>& AbstractStage::getGUIEntries() const {
         return mGuiEntries;
     }
 
-    Geometry Stage::output() const {
+    Geometry AbstractStage::output() const {
         return mOutputGeometry;
     }
 

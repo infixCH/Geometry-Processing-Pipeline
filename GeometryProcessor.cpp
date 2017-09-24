@@ -10,7 +10,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
     GeometryProcessor::GeometryProcessor(Geometry inputGeometry, std::function<void(double, std::string)> callback):
             mInputGeometry(inputGeometry), mCallback(callback) {}
 
-    void GeometryProcessor::addStage(std::shared_ptr<Stage> s) {
+    void GeometryProcessor::addStage(std::shared_ptr<AbstractStage> s) {
         mStages.push_back(s);
     }
 
@@ -18,7 +18,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         Geometry previousGeometry = mInputGeometry;
 
         for (auto stageIter = mStages.begin(); stageIter != mStages.end(); ++stageIter) {
-            std::shared_ptr<Stage> s = *stageIter;
+            std::shared_ptr<AbstractStage> s = *stageIter;
 
             long stageNumber = stageIter - mStages.begin();
             float progress = static_cast<float>(stageNumber)/mStages.size();

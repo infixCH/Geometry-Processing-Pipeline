@@ -14,7 +14,7 @@
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
-class Stage {
+class AbstractStage {
 
 protected:
     std::string mMessage;
@@ -27,7 +27,7 @@ protected:
     virtual void createGUIElements() = 0;
 
 public:
-    Stage(std::string message): mMessage(message) {}
+    AbstractStage(std::string message): mMessage(message) {}
 
     virtual void execute(const Geometry &g);
 
