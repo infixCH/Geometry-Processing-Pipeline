@@ -126,10 +126,10 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
 
         void addGroundPlane(Geometry &g) {
-            Geometry::Point p1(-10, 0, -10);
-            Geometry::Point p2(-10, 0, 10);
-            Geometry::Point p3(10, 0, 10);
-            Geometry::Point p4(10, 0, -10);
+            Geometry::Point p1(-100, 0, -100);
+            Geometry::Point p2(-100, 0, 100);
+            Geometry::Point p3(100, 0, 100);
+            Geometry::Point p4(100, 0, -100);
 
             add4PointPlane(g, p1, p2, p3, p4);
         }
