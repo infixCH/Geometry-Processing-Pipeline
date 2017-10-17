@@ -4,3 +4,6 @@
 [submodule "external/OpenMesh"]
 	path = external/OpenMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
+[submodule "external/GTest"]
+	path = external/GTest
+	url = git@github.com:google/googletest.git
