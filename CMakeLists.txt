@@ -38,6 +38,8 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/external/libigl/shared/cmake" "libigl")
 include_directories(${LIBIGL_INCLUDE_DIRS})
 add_definitions(${LIBIGL_DEFINITIONS})
 
+add_subdirectory(external/GTest)
+
 set(GPP_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${LIBIGL_INCLUDE_DIRS}
@@ -68,8 +70,12 @@ set(SOURCE_FILES
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME}
-        ${LIBIGL_LIBRARIES}
-        ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
-        ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
-        ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
-        ${OPENMESH_LIBRARIES})
+    ${LIBIGL_LIBRARIES}
+    ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
+    ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
+    ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
+    ${OPENMESH_LIBRARIES}
+    gtest_main)
+
+# testing
+include_directories(${PROJECT_SOURCE_DIR}/tests)
