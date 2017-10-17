@@ -53,8 +53,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         void setGroupTitel(std::string groupTitel);
         void addButton(std::string label, std::function<void()> callback);
 
-        void displayObject(Geometry g, Eigen::MatrixXd weights);
-        void displayObject(Geometry g);
+        void displayObject(Geometry g, Eigen::MatrixXd weights, bool align = false);
+        void displayObject(Geometry g, bool align = false);
 
         void launch();
     };

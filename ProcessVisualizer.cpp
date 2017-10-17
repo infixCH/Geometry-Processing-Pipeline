@@ -63,9 +63,9 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
         mViewer.addButton(label, [&, g, weights](){
             if (weights.rows() > 0) {
-                mViewer.displayObject(g, weights);
+                mViewer.displayObject(g, weights, true);
             } else {
-                mViewer.displayObject(g);
+                mViewer.displayObject(g, true);
             }
         });
     }

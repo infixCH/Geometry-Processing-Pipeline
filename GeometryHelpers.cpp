@@ -21,6 +21,8 @@
  * Author: Aurel Gruber on 19.09.17.
  */
 
+#include <set>
+#include <queue>
 #include "include/GeometryHelpers.h"
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
@@ -85,6 +87,41 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             }
         }
 
+        std::unordered_set<Geometry::VertexHandle> growIsland(
+                const Geometry &g,
+                const std::unordered_set<Geometry::VertexHandle> &island, int levels)
+        {
+            std::vector<Geometry::VertexHandle> vertexHandlesToVisit;
+            std::vector<Geometry::VertexHandle> newVertexHandlesToVisit;
+
+            std::unordered_set<Geometry::VertexHandle> nextRim;
+
+            for (auto &i: island) {
+                vertexHandlesToVisit.push_back(i);
+            }
+
+            int nLoops = 0;
+            while (nLoops < levels)
+            {
+                for (auto &v: vertexHandlesToVisit) {
+                    for (auto vv_iter = g.cvv_begin(v); vv_iter; ++vv_iter) {
+                        if (island.find(*vv_iter) != island.end() ||
+                            nextRim.find(*vv_iter) != nextRim.end()) {
+                            continue;
+                        }
+
+                        newVertexHandlesToVisit.push_back(*vv_iter);
+                        nextRim.insert(*vv_iter);
+                    }
+                }
+
+                vertexHandlesToVisit = newVertexHandlesToVisit;
+
+                ++nLoops;
+            }
+
+            return nextRim;
+        }
 
         void findLocalMinimas(const Geometry &g,
                               std::unordered_set<Geometry::VertexHandle> &localMinimas) {

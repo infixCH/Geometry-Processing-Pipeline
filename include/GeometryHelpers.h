@@ -43,6 +43,10 @@ namespace GeometryHelpers {
                           Eigen::Vector3d &planeBase2,
                           Eigen::Vector3d &normal);
 
+    std::unordered_set<Geometry::VertexHandle> growIsland(
+            const Geometry &g,
+            const std::unordered_set<Geometry::VertexHandle> &island, int levels);
+
     void findLocalMinimas(const Geometry &g,
                           std::unordered_set<Geometry::VertexHandle> &localMinimas);
 

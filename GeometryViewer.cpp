@@ -58,21 +58,26 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         }
     }
 
-    void GeometryViewer::displayObject(Geometry g, Eigen::MatrixXd weights) {
+    void GeometryViewer::displayObject(Geometry g, Eigen::MatrixXd weights, bool align) {
 
         Eigen::MatrixXd colors;
         igl::jet(weights, true, colors);
 
         mViewer.data.clear();
         mViewer.data.set_mesh(g.V(), g.F());
-        mViewer.core.align_camera_center(g.V(), g.F());
+
+        if (align) mViewer.core.align_camera_center(g.V(), g.F());
+
         mViewer.data.set_colors(colors);
         mViewer.draw();
     }
 
-    void GeometryViewer::displayObject(Geometry g) {
+    void GeometryViewer::displayObject(Geometry g, bool align) {
         mViewer.data.clear();
         mViewer.data.set_mesh(g.V(), g.F());
+
+        if (align) mViewer.core.align_camera_center(g.V(), g.F());
+
         mViewer.draw();
     }
 
