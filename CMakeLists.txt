@@ -40,6 +40,7 @@ add_definitions(${LIBIGL_DEFINITIONS})
 
 add_subdirectory(external/GTest)
 
+# for GPP clients
 set(GPP_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${LIBIGL_INCLUDE_DIRS}
@@ -47,6 +48,7 @@ set(GPP_INCLUDE_DIRS
         PARENT_SCOPE)
 
 set(SOURCE_FILES
+
         GeometryViewer.cpp
         GeometryProcessor.cpp
         ProcessVisualizer.cpp
@@ -55,6 +57,7 @@ set(SOURCE_FILES
         AbstractStage.cpp
         GUIEntry.cpp
         GeometryHelpers.cpp
+        PointCloud.cpp
 
         include/macros.h
 
@@ -65,7 +68,10 @@ set(SOURCE_FILES
         include/Geometry.h
         include/AbstractStage.h
         include/GUIEntry.h
-        include/GeometryHelpers.h)
+        include/GeometryHelpers.h
+        include/PointCloud.h
+        include/PointCloudHelpers.h
+        )
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
@@ -74,8 +80,20 @@ target_link_libraries(${PROJECT_NAME}
     ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
     ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
     ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
-    ${OPENMESH_LIBRARIES}
-    gtest_main)
+    ${OPENMESH_LIBRARIES})
 
-# testing
-include_directories(${PROJECT_SOURCE_DIR}/tests)
+#testing
+set(gtest_source
+        tests/TestPointCloudHelpers.cpp
+        tests/run_GPP_tests.cpp
+        ${SOURCE_FILES})
+
+add_executable(run_gtests ${gtest_source})
+
+target_link_libraries(run_gtests
+        gtest_main
+        ${LIBIGL_LIBRARIES}
+        ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
+        ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
+        ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
+        ${OPENMESH_LIBRARIES})
