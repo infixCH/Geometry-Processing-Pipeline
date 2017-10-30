@@ -22,6 +22,7 @@
  */
 
 #include "include/ProcessVisualizer.h"
+#include "include/GeometryHelpers.h"
 
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
@@ -63,15 +64,21 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
         mViewer.addButton(label, [&, g, weights](){
             if (weights.rows() > 0) {
-                mViewer.displayObject(g, weights, true);
+                mViewer.displayObject(g, weights);
             } else {
-                mViewer.displayObject(g, true);
+                mViewer.displayObject(g);
             }
         });
     }
 
-    void ProcessVisualizer::launch() {
-        mViewer.launch();
+    void ProcessVisualizer::launch(float scale) {
+        auto afterLaunchCallback = [&](){
+                Geometry g;
+                GeometryHelpers::AddCoordinateAxis(g, scale);
+                mViewer.displayObject(g, true);
+            };
+
+        mViewer.launch(afterLaunchCallback);
     }
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

@@ -40,6 +40,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
             v.screen->performLayout();
 
+            afterLaunchCallback();
+
             return false;
         };
     }
@@ -86,7 +88,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         mCallbacks.push_back(callback);
     }
 
-    void GeometryViewer::launch() {
+    void GeometryViewer::launch(std::function<void()> callback) {
+        afterLaunchCallback = callback;
         mViewer.launch();
     }
 

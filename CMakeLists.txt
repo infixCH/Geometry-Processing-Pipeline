@@ -45,31 +45,32 @@ set(GPP_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${LIBIGL_INCLUDE_DIRS}
         ${OPENMESH_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/nanoflann/include
         PARENT_SCOPE)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/nanoflann/include)
 
 set(SOURCE_FILES
 
         GeometryViewer.cpp
         GeometryProcessor.cpp
         ProcessVisualizer.cpp
-        CLAParser.cpp
         Geometry.cpp
         AbstractStage.cpp
         GUIEntry.cpp
         GeometryHelpers.cpp
-        PointCloud.cpp
+        PointCloudMatrixAdaptor.cpp
 
         include/macros.h
 
         include/GeometryViewer.h
         include/GeometryProcessor.h
         include/ProcessVisualizer.h
-        include/CLAParser.h
         include/Geometry.h
         include/AbstractStage.h
         include/GUIEntry.h
         include/GeometryHelpers.h
-        include/PointCloud.h
+        include/PointCloudMatrixAdaptor.h
         include/PointCloudHelpers.h
         )
 
@@ -88,9 +89,9 @@ set(gtest_source
         tests/run_GPP_tests.cpp
         ${SOURCE_FILES})
 
-add_executable(run_gtests ${gtest_source})
+add_executable(run_GPP_gtests ${gtest_source})
 
-target_link_libraries(run_gtests
+target_link_libraries(run_GPP_gtests
         gtest_main
         ${LIBIGL_LIBRARIES}
         ${LIBIGL_VIEWER_EXTRA_LIBRARIES}

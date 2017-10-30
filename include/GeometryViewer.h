@@ -45,6 +45,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
 
         void addAllButtons(igl::viewer::Viewer &v);
+        std::function<void()> afterLaunchCallback;
 
     public:
         GeometryViewer();
@@ -56,7 +57,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         void displayObject(Geometry g, Eigen::MatrixXd weights, bool align = false);
         void displayObject(Geometry g, bool align = false);
 
-        void launch();
+        void launch(std::function<void()> callback = [](){});
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

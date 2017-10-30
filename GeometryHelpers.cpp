@@ -23,7 +23,10 @@
 
 #include <set>
 #include <queue>
+#include <OpenMesh/Tools/Decimater/ModIndependentSetsT.hh>
 #include "include/GeometryHelpers.h"
+#include "OpenMesh/Tools/Decimater/DecimaterT.hh"
+#include "OpenMesh/Tools/Decimater/ModQuadricT.hh"
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
@@ -171,6 +174,199 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             add4PointPlane(g, p1, p2, p3, p4);
         }
 
+        std::vector<Geometry::VertexHandle> addSphere(Geometry &g, Geometry::Point center, double radius, unsigned int nSegments) {
+            std::vector<Geometry::VertexHandle> addedVertices;
+
+            // define helper function for adding verteices
+            auto adjustToTargetCoordinates = [&](Geometry::Point &p){
+                return p + center;
+            };
+
+            // define number of segments
+            int nLatitudeSegments = nSegments;
+            int nLongitudeSegments = nSegments*2;
+
+            // add top vertex
+            Geometry::Point top(0, radius, 0);
+            Geometry::VertexHandle top_vh = g.add_vertex(adjustToTargetCoordinates(top));
+            addedVertices.push_back(top_vh);
+
+            std::vector<Geometry::VertexHandle> previousCircle(nLongitudeSegments, top_vh);
+            std::vector<Geometry::VertexHandle> currentCircle;
+
+            // add all intermediate vertices
+            for (int latitude = 1; latitude < nLatitudeSegments; ++latitude) {
+
+                double angle1 = (M_PI / nLatitudeSegments) * latitude;
+                double height = cos(angle1)*radius;
+
+                // initial vertex of new level
+                Geometry::Point p(0, height, sin(angle1)*radius);
+                Geometry::VertexHandle first_vh = g.add_vertex(adjustToTargetCoordinates(p));
+                addedVertices.push_back(first_vh);
+
+                currentCircle.push_back(first_vh);
+
+                // add all intermediate vertices on circle
+                for (int longitude = 1; longitude < nLongitudeSegments; ++longitude) {
+
+                    double angle2 = (2*M_PI / (nLongitudeSegments)) * longitude;
+                    double x = sin(angle1)*sin(angle2)*radius;
+                    double z = sin(angle1)*cos(angle2)*radius;
+
+                    Geometry::Point p(x, height, z);
+
+                    Geometry::VertexHandle current_vh = g.add_vertex(adjustToTargetCoordinates(p));
+                    addedVertices.push_back(current_vh);
+
+
+                    g.add_face(previousCircle[longitude-1], *currentCircle.rbegin(), current_vh);
+                    if (latitude > 1) {
+                        g.add_face(previousCircle[longitude - 1], current_vh,
+                                   previousCircle[longitude % (nLongitudeSegments)]);
+                    }
+
+                    currentCircle.push_back(current_vh);
+                }
+
+                // close circle
+                g.add_face(*previousCircle.rbegin(), *currentCircle.rbegin(), *currentCircle.begin());
+                if (latitude > 1) {
+                    g.add_face(*previousCircle.rbegin(), *currentCircle.begin(), *previousCircle.begin());
+                }
+
+                previousCircle = currentCircle;
+                currentCircle.clear();
+            }
+
+            Geometry::Point bottom(0, -radius, 0);
+            Geometry::VertexHandle bottom_vh = g.add_vertex(adjustToTargetCoordinates(bottom));
+            addedVertices.push_back(bottom_vh);
+
+            // close sphere
+            for (int longitude = 1; longitude <= nLongitudeSegments; ++longitude) {
+                g.add_face(previousCircle[longitude-1], bottom_vh, previousCircle[longitude % (nLongitudeSegments)]);
+            }
+
+            return addedVertices;
+        }
+
+        std::vector<Geometry::VertexHandle>  AddCoordinateAxis(Geometry &g, double size) {
+            std::vector<Geometry::VertexHandle> addedVertices;
+
+            double halfThickness = size / 200;
+
+            // create Y
+            Geometry::VertexHandle vh1 = g.add_vertex(Geometry::Point(-halfThickness,0,-halfThickness));
+            Geometry::VertexHandle vh2 = g.add_vertex(Geometry::Point(halfThickness,0,-halfThickness));
+            Geometry::VertexHandle vh3 = g.add_vertex(Geometry::Point(-halfThickness,0,halfThickness));
+            Geometry::VertexHandle vh4 = g.add_vertex(Geometry::Point(halfThickness,0,halfThickness));
+
+            g.add_face(vh1, vh2, vh3);
+            g.add_face(vh3, vh2, vh4);
+
+            Geometry::VertexHandle vh5 = g.add_vertex(Geometry::Point(-halfThickness,size,-halfThickness));
+            Geometry::VertexHandle vh6 = g.add_vertex(Geometry::Point(halfThickness,size,-halfThickness));
+            Geometry::VertexHandle vh7 = g.add_vertex(Geometry::Point(-halfThickness,size,halfThickness));
+            Geometry::VertexHandle vh8 = g.add_vertex(Geometry::Point(halfThickness,size,halfThickness));
+
+            Geometry::VertexHandle vh9 = g.add_vertex(Geometry::Point(0,size + halfThickness * 6,0));
+
+            g.add_face(vh9, vh6, vh5);
+            g.add_face(vh9, vh8, vh6);
+            g.add_face(vh9, vh7, vh8);
+            g.add_face(vh9, vh5, vh7);
+
+            g.add_face(vh5, vh2, vh1);
+            g.add_face(vh5, vh6, vh2);
+
+            g.add_face(vh6, vh8, vh2);
+            g.add_face(vh2, vh8, vh4);
+
+            g.add_face(vh8, vh7, vh4);
+            g.add_face(vh4, vh7, vh3);
+
+            g.add_face(vh7, vh5, vh3);
+            g.add_face(vh3, vh5, vh1);
+
+            // create X
+            vh1 = g.add_vertex(Geometry::Point(0, -halfThickness,-halfThickness));
+            vh2 = g.add_vertex(Geometry::Point(0, halfThickness,-halfThickness));
+            vh3 = g.add_vertex(Geometry::Point(0, -halfThickness,halfThickness));
+            vh4 = g.add_vertex(Geometry::Point(0, halfThickness,halfThickness));
+
+            g.add_face(vh3, vh2, vh1);
+            g.add_face(vh4, vh2, vh3);
+
+            vh5 = g.add_vertex(Geometry::Point(size, -halfThickness,-halfThickness));
+            vh6 = g.add_vertex(Geometry::Point(size, halfThickness,-halfThickness));
+            vh7 = g.add_vertex(Geometry::Point(size, -halfThickness,halfThickness));
+            vh8 = g.add_vertex(Geometry::Point(size, halfThickness,halfThickness));
+
+
+            g.add_face(vh5, vh6, vh7);
+            g.add_face(vh6, vh8, vh7);
+
+            g.add_face(vh1, vh2, vh5);
+            g.add_face(vh2, vh6, vh5);
+
+            g.add_face(vh2, vh8, vh6);
+            g.add_face(vh4, vh8, vh2);
+
+            g.add_face(vh4, vh7, vh8);
+            g.add_face(vh3, vh7, vh4);
+
+            g.add_face(vh3, vh5, vh7);
+            g.add_face(vh1, vh5, vh3);
+
+            // create X
+            vh1 = g.add_vertex(Geometry::Point(-halfThickness,-halfThickness, 0));
+            vh2 = g.add_vertex(Geometry::Point(halfThickness,-halfThickness, 0));
+            vh3 = g.add_vertex(Geometry::Point(-halfThickness,halfThickness, 0));
+            vh4 = g.add_vertex(Geometry::Point(halfThickness,halfThickness, 0));
+
+            g.add_face(vh3, vh2, vh1);
+            g.add_face(vh4, vh2, vh3);
+
+            vh5 = g.add_vertex(Geometry::Point(-halfThickness,-halfThickness, size));
+            vh6 = g.add_vertex(Geometry::Point(halfThickness,-halfThickness, size));
+            vh7 = g.add_vertex(Geometry::Point(-halfThickness,halfThickness, size));
+            vh8 = g.add_vertex(Geometry::Point(halfThickness,halfThickness, size));
+
+
+            g.add_face(vh5, vh6, vh7);
+            g.add_face(vh6, vh8, vh7);
+
+            g.add_face(vh1, vh2, vh5);
+            g.add_face(vh2, vh6, vh5);
+
+            g.add_face(vh2, vh8, vh6);
+            g.add_face(vh4, vh8, vh2);
+
+            g.add_face(vh4, vh7, vh8);
+            g.add_face(vh3, vh7, vh4);
+
+            g.add_face(vh3, vh5, vh7);
+            g.add_face(vh1, vh5, vh3);
+
+            return addedVertices;
+        }
+
+        Geometry decimateGeometry(Geometry g, double ratio) {
+            typedef OpenMesh::Decimater::DecimaterT<Geometry> Decimator;
+            typedef OpenMesh::Decimater::ModQuadricT<Geometry>::Handle QuadModule;
+
+            Decimator decimater(g);
+            QuadModule quadModule;
+
+            decimater.add(quadModule);
+
+            decimater.initialize();
+            decimater.decimate(static_cast<int>((1.0 - ratio) * g.n_vertices()));
+
+            g.garbage_collection();
+            return g;
+        }
     }
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

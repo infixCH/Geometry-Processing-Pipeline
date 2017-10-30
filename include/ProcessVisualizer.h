@@ -43,7 +43,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
         void addEntries(const std::vector<GUIEntry> &entries);
         void addButton(int entryNumber, const GUIEntry &entry);
-        void launch();
+        void launch(float scale);
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

@@ -27,10 +27,10 @@
 
 #include "../include/Geometry.h"
 #include "../include/PointCloudHelpers.h"
-#include "../include/PointCloud.h"
+#include "../include/PointCloudMatrixAdaptor.h"
 #include "../external/GTest/googletest/include/gtest/gtest.h"
 
-TEST(simplePointCloudTest, 2DTest){
+TEST(GPPPointCloudTest, simplePointCloud2DTest){
 
     std::vector<GPP::Geometry::Point> points;
 
@@ -41,7 +41,7 @@ TEST(simplePointCloudTest, 2DTest){
     g.add_vertex(GPP::Geometry::Point(2.5, 0, 0));
 
 
-    GPP::PointCloud<2> pc(&g);
+    GPP::PointCloudMatrixAdaptor<2> pc(&g);
 
     GPP::PointCloudHelpers::KDTree<2> kdtree(-1 /*dimension set by typedef*/, pc);
     kdtree.buildIndex();
@@ -57,7 +57,7 @@ TEST(simplePointCloudTest, 2DTest){
     ASSERT_NEAR(closest.second, pow(0.1, 2), 1E-6);
 }
 
-TEST(simplePointCloudTest, 3DTest){
+TEST(GPPPointCloudTest, simplePointCloud3DTest){
 
     std::vector<GPP::Geometry::Point> points;
 
@@ -68,7 +68,7 @@ TEST(simplePointCloudTest, 3DTest){
     g.add_vertex(GPP::Geometry::Point(2.5, 0, 0));
 
 
-    GPP::PointCloud<3> pc(&g);
+    GPP::PointCloudMatrixAdaptor<3> pc(&g);
 
     GPP::PointCloudHelpers::KDTree<3> kdtree(-1 /*dimension set by typedef*/, pc);
     kdtree.buildIndex();

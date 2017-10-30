@@ -25,7 +25,7 @@
 #define SCANRECOGNITIONSOFTWARE_POINTCLOUDHELPERS_H
 
 #include "../include/macros.h"
-#include "../include/PointCloud.h"
+#include "PointCloudMatrixAdaptor.h"
 #include "../include/Geometry.h"
 #include "../external/nanoflann/include/nanoflann.hpp"
 #include <Eigen/Dense>
@@ -34,38 +34,6 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     namespace PointCloudHelpers {
 
-        template <int dimension>
-        using KDTree =
-        nanoflann::KDTreeSingleIndexAdaptor<
-                nanoflann::L2_Simple_Adaptor<double, PointCloud<dimension> > ,
-                PointCloud<dimension>,
-                dimension /* dim */>;
-
-        template <int dimension>
-        std::pair<Geometry::VertexHandle, double> findNearestPoint(PointCloud<dimension> &pc,
-                                                                   Geometry::Point queryPoint,
-                                                                   Geometry const &g,
-                                                                   KDTree<dimension> const *kdtree)
-        {
-            int num_results = 1;
-
-            double p_coords[dimension];
-            if (dimension == 2) {
-                p_coords[0] = queryPoint[0];
-                p_coords[1] = queryPoint[2];
-            } else {
-                p_coords[0] = queryPoint[0];
-                p_coords[1] = queryPoint[1];
-                p_coords[2] = queryPoint[2];
-            }
-
-            std::vector<size_t >   ret_index(num_results);
-            std::vector<double>   out_dist_sqr(num_results);
-
-            kdtree->knnSearch(p_coords, num_results, &ret_index[0], &out_dist_sqr[0]);
-
-            return std::make_pair( pc.kdtree_get_vh(ret_index[0]), out_dist_sqr[0]);
-        };
 
     }
 

@@ -29,6 +29,7 @@
 #include <stack>
 #include "macros.h"
 
+#include <iostream>
 #include "Geometry.h"
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
@@ -57,6 +58,13 @@ namespace GeometryHelpers {
                         Geometry::Point p4);
 
     void addGroundPlane(Geometry &g);
+
+    std::vector<Geometry::VertexHandle>  addSphere(Geometry &g, Geometry::Point center, double radius, unsigned int nSegments);
+
+    std::vector<Geometry::VertexHandle>  AddCoordinateAxis(Geometry &g, double size);
+
+    Geometry decimateGeometry(Geometry g, double ratio);
+
 }
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END
