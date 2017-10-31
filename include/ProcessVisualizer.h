@@ -28,13 +28,17 @@
 #include "GeometryProcessor.h"
 #include "GeometryViewer.h"
 #include "GUIEntry.h"
+#include "Geometry.h"
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     class ProcessVisualizer {
     private:
         GeometryViewer mViewer;
-        GeometryProcessor &mProcessor;
+        GeometryProcessor mProcessor;
+
+        nanogui::Button* loadButton;
+        nanogui::Label* loadGroup;
 
     public:
         ProcessVisualizer(GeometryProcessor &p,

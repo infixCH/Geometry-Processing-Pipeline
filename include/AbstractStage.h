@@ -53,6 +53,8 @@ public:
     std::string getMessage();
     const std::vector<GUIEntry>& getGUIEntries() const;
     Geometry output() const;
+
+    void clearStage();
 };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

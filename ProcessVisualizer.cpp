@@ -23,7 +23,7 @@
 
 #include "include/ProcessVisualizer.h"
 #include "include/GeometryHelpers.h"
-
+#include <nanogui/messagedialog.h>
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
@@ -31,14 +31,6 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
                                          std::string windowTitel,
                                          std::string guiGroupTitel) : mProcessor(p){
         mViewer.setWindowTitel(windowTitel);
-        mViewer.setGroupTitel(guiGroupTitel);
-
-        for (auto stageIter = p.mStages.begin(); stageIter != p.mStages.end(); ++stageIter){
-            std::shared_ptr<AbstractStage> s = *stageIter;
-
-            const std::vector<GUIEntry> &entries = s->getGUIEntries();
-            addEntries(entries);
-        }
     }
 
     void ProcessVisualizer::addEntries(const std::vector<GUIEntry> &entries) {
@@ -72,11 +64,64 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
     }
 
     void ProcessVisualizer::launch(float scale) {
-        auto afterLaunchCallback = [&](){
-                Geometry g;
-                GeometryHelpers::AddCoordinateAxis(g, scale);
-                mViewer.displayObject(g, true);
-            };
+        auto afterLaunchCallback = [&]() {
+
+            loadGroup = mViewer.addGroup("Load Object");
+            loadButton = mViewer.addButton("Load Scan from .obj file", [&]() {
+                std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, false);
+
+                if (path == "") return;
+
+                bool success;
+                Geometry g(path, success);
+
+                if (!success) return;
+
+                mViewer.clearGUI();
+
+                // recursive reference to the callback
+                loadGroup = mViewer.addGroup("Load Object");
+                loadButton = mViewer.addButton("Load Object from .obj file", loadButton->callback());
+
+                // reset processor
+                mProcessor.clearStages();
+
+                mProcessor.processGeometry(g);
+
+                mViewer.addGroup("Processing Steps");
+
+                for (auto stageIter = mProcessor.mStages.begin(); stageIter != mProcessor.mStages.end(); ++stageIter) {
+                    int stageNumber = stageIter - mProcessor.mStages.begin();
+                    mViewer.addGroup("   " + std::to_string(stageNumber) + ": " + (*stageIter)->getMessage());
+
+                    std::shared_ptr<AbstractStage> s = *stageIter;
+                    const std::vector<GUIEntry> &entries = s->getGUIEntries();
+                    addEntries(entries);
+                }
+
+                mViewer.addGroup("Save Geometry");
+
+                mViewer.addButton("Save processed Objects to .obj file", [&]() {
+                    std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, true);
+                    if (path == "") return;
+
+                    bool success;
+                    Geometry g;
+                    mProcessor.getResultingGeometry(g);
+                    g.saveGeometry(path, success);
+
+                    if (!success) return;
+                });
+
+                mViewer.updateGui();
+            });
+
+            mViewer.updateGui();
+
+            Geometry g;
+            GeometryHelpers::AddCoordinateAxis(g, scale);
+            mViewer.displayObject(g, true);
+        };
 
         mViewer.launch(afterLaunchCallback);
     }

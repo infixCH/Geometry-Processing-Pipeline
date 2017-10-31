@@ -44,4 +44,9 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         return mOutputGeometry;
     }
 
+    void AbstractStage::clearStage() {
+        mGuiEntries.clear();
+        mInputGeometry = mOutputGeometry = Geometry();
+    }
+
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

@@ -26,14 +26,21 @@
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     // TODO(d) look into automatic formatting with clang-format
-    GeometryProcessor::GeometryProcessor(Geometry inputGeometry, std::function<void(double, std::string)> callback):
-            mInputGeometry(inputGeometry), mCallback(callback) {}
+    GeometryProcessor::GeometryProcessor(std::function<void(double, std::string)> callback): mCallback(callback){
+    }
 
     void GeometryProcessor::addStage(std::shared_ptr<AbstractStage> s) {
         mStages.push_back(s);
     }
 
-    void GeometryProcessor::processStages() {
+    void GeometryProcessor::clearStages() {
+        for (auto &stage: mStages) {
+            stage->clearStage();
+        }
+    }
+
+    void GeometryProcessor::processGeometry(Geometry &g){
+        mInputGeometry = g;
         Geometry previousGeometry = mInputGeometry;
 
         for (auto stageIter = mStages.begin(); stageIter != mStages.end(); ++stageIter) {

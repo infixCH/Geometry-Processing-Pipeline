@@ -27,7 +27,9 @@
 #include "macros.h"
 #include <igl/viewer/Viewer.h>
 #include <Eigen/Dense>
+#include <nanogui/label.h>
 #include "Geometry.h"
+#include <set>
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
@@ -35,29 +37,26 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     private:
         igl::viewer::Viewer mViewer;
-        // TODO(d) merge mLabels and mCallbacks to vector of pairs
-        // TODO(d) maybe possible to add as generic GUI objects
-        // TODO(d) might be possible to construct viewer with GUI elements already
-        std::vector<std::string> mLabels;
-        std::vector<std::function<void()>> mCallbacks;
         std::string mWindowTitel;
-        std::string mGroupTitel;
-
-
-        void addAllButtons(igl::viewer::Viewer &v);
         std::function<void()> afterLaunchCallback;
+        nanogui::Window *mWindow;
+        std::vector<nanogui::Label *>groups;
+        int idCounter = 0;
 
     public:
         GeometryViewer();
 
         void setWindowTitel(std::string windowTitel);
-        void setGroupTitel(std::string groupTitel);
-        void addButton(std::string label, std::function<void()> callback);
+
+        nanogui::Label* addGroup(std::string groupName);
+        nanogui::Button* addButton(std::string label, std::function<void()> callback);
+        void clearGUI();
 
         void displayObject(Geometry g, Eigen::MatrixXd weights, bool align = false);
         void displayObject(Geometry g, bool align = false);
 
-        void launch(std::function<void()> callback = [](){});
+        void launch(std::function<void()> callback);
+        void updateGui();
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

@@ -22,10 +22,28 @@
  */
 
 #include "include/Geometry.h"
+#include <igl/readOBJ.h>
+#include <igl/writeOBJ.h>
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
-    Geometry::Geometry(Eigen::MatrixXd V, Eigen::MatrixXi F) {
+    Geometry::Geometry(Eigen::MatrixXd &V, Eigen::MatrixXi &F) {
+        init(V, F);
+    }
+
+    Geometry::Geometry(std::string &pathToObj, bool &status) {
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        status = igl::readOBJ(pathToObj, V, F);
+
+        if (status) {
+            init(V, F);
+        } else {
+            std::cerr << ".Obj file with scan could not be found!" << std::endl;
+        }
+    }
+
+    void Geometry::init(Eigen::MatrixXd &V, Eigen::MatrixXi &F) {
 
         for (int i = 0; i < V.rows(); ++i) {
             Point p(V(i, 0), V(i,1), V(i,2));
@@ -73,6 +91,11 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     void Geometry::setV(Eigen::MatrixXd V) {
 
+        if (V.rows() != n_vertices()){
+            std::cerr << "Wrong number of vertices!" << std::endl;
+            return;
+        }
+
         for (int i = 0; i < V.rows(); ++i) {
             Point p(V(i,0), V(i,1), V(i,2));
             set_point(vertex_handle(i), p);
@@ -90,6 +113,15 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             VertexHandle vh3 = vertex_handle(F(i, 2));
 
             add_face(vh1, vh2, vh3);
+        }
+    }
+
+    void Geometry::saveGeometry(std::string &pathToObj, bool &status) {
+
+        status = igl::writeOBJ(pathToObj, V(), F());
+
+        if (!status) {
+            std::cerr << "File could not be written!" << std::endl;
         }
     }
 

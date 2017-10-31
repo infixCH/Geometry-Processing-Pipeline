@@ -34,16 +34,21 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
     };
 
     class Geometry: public OpenMesh::TriMesh_ArrayKernelT<GeometryMeshTraits> {
-    public:
-        Geometry() {}
+        void init(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
-        Geometry(Eigen::MatrixXd V, Eigen::MatrixXi F);
+    public:
+
+        Geometry(){}
+        Geometry(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
+        Geometry(std::string &pathToObj, bool &status);
 
         Eigen::MatrixXd V() const;
         Eigen::MatrixXi F() const;
 
         void setV(Eigen::MatrixXd V);
         void setF(Eigen::MatrixXi F);
+
+        void saveGeometry(std::string &pathToObj, bool &status);
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

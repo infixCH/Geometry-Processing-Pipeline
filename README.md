@@ -150,7 +150,7 @@ p.addStage(std::shared_ptr<GPP::AbstractStage>(new ScanRecognition::OriginalScan
 p.addStage(std::shared_ptr<GPP::AbstractStage>(new ScanRecognition::InitialXYRotation("Finding Initial XY-Rotation...")));
 p.addStage(std::shared_ptr<GPP::AbstractStage>(new ScanRecognition::RefinedXYRotation("Refining Initial XY-Rotation...")));
  
-p.processStages();
+p.processGeometry();
  
 GPP::ProcessVisualizer v(p, "Scan Recognition Software", "Intermediate Steps");
 v.launch();

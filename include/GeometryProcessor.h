@@ -48,10 +48,11 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         ProgressCallback mCallback;
 
     public:
-        GeometryProcessor(Geometry inputGeometry, std::function<void(double, std::string)> callback);
+        GeometryProcessor(std::function<void(double, std::string)> callback);
 
         void addStage(std::shared_ptr<AbstractStage> s);
-        void processStages();
+        void clearStages();
+        void processGeometry(GPP::Geometry &g);
 
         void getResultingGeometry(Geometry &g) const;
     };

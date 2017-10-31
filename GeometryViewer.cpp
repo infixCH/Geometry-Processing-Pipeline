@@ -28,17 +28,11 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     GeometryViewer::GeometryViewer() {
         mWindowTitel = "Window";
-        mGroupTitel = "Group";
 
         mViewer.callback_init = [&](igl::viewer::Viewer &v){
-            // TODO(d) comment for disposing default window
+            // initial window is already set in nanogui code -> must be disposed
             v.ngui->window()->dispose();
-            v.ngui->addWindow(Eigen::Vector2i(220,10),mWindowTitel);
-            v.ngui->addGroup(mGroupTitel);
-
-            addAllButtons(v);
-
-            v.screen->performLayout();
+            mWindow = v.ngui->addWindow(Eigen::Vector2i(0,0),mWindowTitel);
 
             afterLaunchCallback();
 
@@ -48,16 +42,6 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
     void GeometryViewer::setWindowTitel(std::string windowTitel) {
         mWindowTitel = windowTitel;
-    }
-
-    void GeometryViewer::setGroupTitel(std::string groupTitel) {
-        mGroupTitel = groupTitel;
-    }
-
-    void GeometryViewer::addAllButtons(igl::viewer::Viewer &v) {
-        for (int i = 0; i < mLabels.size(); ++i) {
-            v.ngui->addButton(mLabels[i], mCallbacks[i]);
-        }
     }
 
     void GeometryViewer::displayObject(Geometry g, Eigen::MatrixXd weights, bool align) {
@@ -83,14 +67,30 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         mViewer.draw();
     }
 
-    void GeometryViewer::addButton(std::string label, std::function<void()> callback) {
-        mLabels.push_back(label);
-        mCallbacks.push_back(callback);
+    nanogui::Label* GeometryViewer::addGroup(std::string groupName) {
+        groups.push_back(mViewer.ngui->addGroup(groupName));
+        (*groups.rbegin())->setId(std::to_string(idCounter++));
+        return *groups.rbegin();
+    }
+
+    nanogui::Button* GeometryViewer::addButton(std::string label, std::function<void()> callback) {
+        nanogui::Button* button = mViewer.ngui->addButton(label, callback);
+        button->setId(std::to_string(idCounter++));
+        return button;
+    }
+
+    void GeometryViewer::clearGUI() {
+        mViewer.ngui->window()->dispose();
+        mWindow = mViewer.ngui->addWindow(Eigen::Vector2i(0,0),mWindowTitel);
     }
 
     void GeometryViewer::launch(std::function<void()> callback) {
         afterLaunchCallback = callback;
         mViewer.launch();
+    }
+
+    void GeometryViewer::updateGui(){
+        mViewer.screen->performLayout();
     }
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END
