@@ -85,7 +85,7 @@ target_link_libraries(${PROJECT_NAME}
 
 #testing
 set(gtest_source
-        tests/TestPointCloudHelpers.cpp
+        tests/TestPointCloudMatrixAdaptor.cpp
         tests/run_GPP_tests.cpp
         ${SOURCE_FILES})
 
