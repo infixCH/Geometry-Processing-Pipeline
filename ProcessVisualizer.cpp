@@ -133,6 +133,10 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
                 mViewer.updateGui();
             });
 
+            mViewer.addButton("Exit", [&]() {
+                mViewer.quit();
+            });
+
             mViewer.updateGui();
 
             Geometry g;
