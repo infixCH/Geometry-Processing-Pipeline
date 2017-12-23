@@ -18,50 +18,24 @@
  *
  * @license LGPL-3.0+
  *
- * Author: Aurel Gruber on 12.09.17.
+ * Author: Aurel Gruber on 20.11.17
  */
 
-#ifndef GEOMETRYPROCESSINGPIPELINE_STAGE_H
-#define GEOMETRYPROCESSINGPIPELINE_STAGE_H
-
-#include <string>
-#include <functional>
-#include <vector>
+#ifndef SCANRECOGNITIONSOFTWARE_BOOLEANOPERATION_H
+#define SCANRECOGNITIONSOFTWARE_BOOLEANOPERATION_H
 
 #include "macros.h"
+#include <cork.h>
 #include "Geometry.h"
-#include "GUIEntry.h"
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
-class AbstractStage {
+namespace BooleanOperation {
 
-protected:
-    std::string mMessage;
+    Geometry difference(const Geometry &g1, const Geometry &g2);
 
-    Geometry mOutputGeometry;
-    std::vector<Geometry> mOtherOutputs;
-
-    Geometry mInputGeometry;
-    std::vector<GUIEntry> mGuiEntries;
-
-    virtual void processGeometry() = 0;
-    virtual void createGUIElements() = 0;
-
-public:
-    AbstractStage(std::string message): mMessage(message) {}
-
-    virtual void execute(const Geometry &g);
-
-    const std::vector<GUIEntry>& getGUIEntries() const;
-
-    std::string getMessage();
-    Geometry output() const;
-    const std::vector<Geometry>& otherOutputs() const;
-
-    virtual void clearStage();
-};
+}
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END
 
-#endif //GEOMETRYPROCESSINGPIPELINE_STAGE_H
+#endif //SCANRECOGNITIONSOFTWARE_BOOLEANOPERATION_H

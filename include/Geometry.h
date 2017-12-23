@@ -48,7 +48,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         void setV(Eigen::MatrixXd V);
         void setF(Eigen::MatrixXi F);
 
-        void saveGeometry(std::string &pathToObj, bool &status);
+        void saveGeometry(std::string pathToObj, bool &status) const;
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

@@ -30,6 +30,24 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
     ProcessVisualizer::ProcessVisualizer(GeometryProcessor &p,
                                          std::string windowTitel,
                                          std::string guiGroupTitel) : mProcessor(p){
+        // default saving function only saves output
+        mSavingFunction = [&](Geometry &g, const std::vector<Geometry> &otherOutputs) {
+            std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, true);
+            if (path == "") return;
+
+            bool success;
+            g.saveGeometry(path, success);
+
+            if (!success) return;
+        };
+
+        mViewer.setWindowTitel(windowTitel);
+    }
+
+    ProcessVisualizer::ProcessVisualizer(GeometryProcessor &p,
+                                         std::string windowTitel,
+                                         std::string guiGroupTitel,
+                                         std::function<void(Geometry& output, const std::vector<Geometry> &otherOutputs)> savingFunction) : mProcessor(p), mSavingFunction(savingFunction){
         mViewer.setWindowTitel(windowTitel);
     }
 
@@ -67,8 +85,9 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         auto afterLaunchCallback = [&]() {
 
             loadGroup = mViewer.addGroup("Load Object");
-            loadButton = mViewer.addButton("Load Scan from .obj file", [&]() {
-                std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, false);
+            loadButton = mViewer.addButton("Load Object from .obj file", [&]() {
+                //std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, false);
+                std::string path = igl::file_dialog_open();
 
                 if (path == "") return;
 
@@ -102,15 +121,13 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
                 mViewer.addGroup("Save Geometry");
 
                 mViewer.addButton("Save processed Objects to .obj file", [&]() {
-                    std::string path = nanogui::file_dialog({{"obj", "Wavefront OBJ"}}, true);
-                    if (path == "") return;
-
-                    bool success;
                     Geometry g;
                     mProcessor.getResultingGeometry(g);
-                    g.saveGeometry(path, success);
+                    mSavingFunction(g, mProcessor.mStages.back()->otherOutputs());
+                });
 
-                    if (!success) return;
+                mViewer.addButton("Exit", [&]() {
+                    mViewer.quit();
                 });
 
                 mViewer.updateGui();

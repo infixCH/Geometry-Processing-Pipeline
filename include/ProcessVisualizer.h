@@ -40,10 +40,16 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         nanogui::Button* loadButton;
         nanogui::Label* loadGroup;
 
+        std::function<void(Geometry& output, const std::vector<Geometry> &otherOutputs)> mSavingFunction;
     public:
         ProcessVisualizer(GeometryProcessor &p,
                           std::string windowTitel,
                           std::string guiGroupTitel);
+
+        ProcessVisualizer(GeometryProcessor &p,
+                          std::string windowTitel,
+                          std::string guiGroupTitel,
+                          std::function<void(Geometry& output, const std::vector<Geometry> &otherOutputs)> savingFunction);
 
         void addEntries(const std::vector<GUIEntry> &entries);
         void addButton(int entryNumber, const GUIEntry &entry);

@@ -90,6 +90,49 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             }
         }
 
+        Geometry mergeGeometries(const Geometry &g1, const Geometry &g2) {
+
+            Geometry g_out;
+
+            for (auto iter = g1.vertices_begin(); iter != g1.vertices_end(); ++iter) {
+                g_out.add_vertex(g1.point(iter));
+            }
+
+            for (auto iter = g1.faces_begin(); iter != g1.faces_end(); ++iter) {
+                Geometry::VertexHandle vh[3];
+                int i = 0;
+                for (auto v_iter = g1.cfv_cwbegin(iter); v_iter != g1.cfv_cwend(iter); ++v_iter){
+                    vh[i++] = *v_iter;
+                }
+
+                g_out.add_face(
+                        g_out.vertex_handle(vh[0].idx()),
+                        g_out.vertex_handle(vh[1].idx()),
+                        g_out.vertex_handle(vh[2].idx())
+                );
+            }
+
+            for (auto iter = g2.vertices_begin(); iter != g2.vertices_end(); ++iter) {
+                g_out.add_vertex(g2.point(iter));
+            }
+
+            for (auto iter = g2.faces_begin(); iter != g2.faces_end(); ++iter) {
+                Geometry::VertexHandle vh[3];
+                int i = 0;
+                for (auto v_iter = g2.cfv_cwbegin(iter); v_iter != g2.cfv_cwend(iter); ++v_iter){
+                    vh[i++] = *v_iter;
+                }
+
+                g_out.add_face(
+                        g_out.vertex_handle(vh[0].idx() + g1.n_vertices()),
+                        g_out.vertex_handle(vh[1].idx() + g1.n_vertices()),
+                        g_out.vertex_handle(vh[2].idx() + g1.n_vertices())
+                );
+            }
+
+            return g_out;
+        }
+
         std::unordered_set<Geometry::VertexHandle> growIsland(
                 const Geometry &g,
                 const std::unordered_set<Geometry::VertexHandle> &island, int levels)
@@ -251,26 +294,26 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             return addedVertices;
         }
 
-        std::vector<Geometry::VertexHandle>  AddCoordinateAxis(Geometry &g, double size) {
+        std::vector<Geometry::VertexHandle> AddCoordinateAxis(Geometry &g, double size) {
             std::vector<Geometry::VertexHandle> addedVertices;
 
             double halfThickness = size / 200;
 
             // create Y
-            Geometry::VertexHandle vh1 = g.add_vertex(Geometry::Point(-halfThickness,0,-halfThickness));
-            Geometry::VertexHandle vh2 = g.add_vertex(Geometry::Point(halfThickness,0,-halfThickness));
-            Geometry::VertexHandle vh3 = g.add_vertex(Geometry::Point(-halfThickness,0,halfThickness));
-            Geometry::VertexHandle vh4 = g.add_vertex(Geometry::Point(halfThickness,0,halfThickness));
+            Geometry::VertexHandle vh1 = g.add_vertex(Geometry::Point(-halfThickness, 0, -halfThickness));
+            Geometry::VertexHandle vh2 = g.add_vertex(Geometry::Point(halfThickness, 0, -halfThickness));
+            Geometry::VertexHandle vh3 = g.add_vertex(Geometry::Point(-halfThickness, 0, halfThickness));
+            Geometry::VertexHandle vh4 = g.add_vertex(Geometry::Point(halfThickness, 0, halfThickness));
 
             g.add_face(vh1, vh2, vh3);
             g.add_face(vh3, vh2, vh4);
 
-            Geometry::VertexHandle vh5 = g.add_vertex(Geometry::Point(-halfThickness,size,-halfThickness));
-            Geometry::VertexHandle vh6 = g.add_vertex(Geometry::Point(halfThickness,size,-halfThickness));
-            Geometry::VertexHandle vh7 = g.add_vertex(Geometry::Point(-halfThickness,size,halfThickness));
-            Geometry::VertexHandle vh8 = g.add_vertex(Geometry::Point(halfThickness,size,halfThickness));
+            Geometry::VertexHandle vh5 = g.add_vertex(Geometry::Point(-halfThickness, size, -halfThickness));
+            Geometry::VertexHandle vh6 = g.add_vertex(Geometry::Point(halfThickness, size, -halfThickness));
+            Geometry::VertexHandle vh7 = g.add_vertex(Geometry::Point(-halfThickness, size, halfThickness));
+            Geometry::VertexHandle vh8 = g.add_vertex(Geometry::Point(halfThickness, size, halfThickness));
 
-            Geometry::VertexHandle vh9 = g.add_vertex(Geometry::Point(0,size + halfThickness * 6,0));
+            Geometry::VertexHandle vh9 = g.add_vertex(Geometry::Point(0, size + halfThickness * 6, 0));
 
             g.add_face(vh9, vh6, vh5);
             g.add_face(vh9, vh8, vh6);
@@ -290,18 +333,18 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             g.add_face(vh3, vh5, vh1);
 
             // create X
-            vh1 = g.add_vertex(Geometry::Point(0, -halfThickness,-halfThickness));
-            vh2 = g.add_vertex(Geometry::Point(0, halfThickness,-halfThickness));
-            vh3 = g.add_vertex(Geometry::Point(0, -halfThickness,halfThickness));
-            vh4 = g.add_vertex(Geometry::Point(0, halfThickness,halfThickness));
+            vh1 = g.add_vertex(Geometry::Point(0, -halfThickness, -halfThickness));
+            vh2 = g.add_vertex(Geometry::Point(0, halfThickness, -halfThickness));
+            vh3 = g.add_vertex(Geometry::Point(0, -halfThickness, halfThickness));
+            vh4 = g.add_vertex(Geometry::Point(0, halfThickness, halfThickness));
 
             g.add_face(vh3, vh2, vh1);
             g.add_face(vh4, vh2, vh3);
 
-            vh5 = g.add_vertex(Geometry::Point(size, -halfThickness,-halfThickness));
-            vh6 = g.add_vertex(Geometry::Point(size, halfThickness,-halfThickness));
-            vh7 = g.add_vertex(Geometry::Point(size, -halfThickness,halfThickness));
-            vh8 = g.add_vertex(Geometry::Point(size, halfThickness,halfThickness));
+            vh5 = g.add_vertex(Geometry::Point(size, -halfThickness, -halfThickness));
+            vh6 = g.add_vertex(Geometry::Point(size, halfThickness, -halfThickness));
+            vh7 = g.add_vertex(Geometry::Point(size, -halfThickness, halfThickness));
+            vh8 = g.add_vertex(Geometry::Point(size, halfThickness, halfThickness));
 
 
             g.add_face(vh5, vh6, vh7);
@@ -320,18 +363,18 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             g.add_face(vh1, vh5, vh3);
 
             // create X
-            vh1 = g.add_vertex(Geometry::Point(-halfThickness,-halfThickness, 0));
-            vh2 = g.add_vertex(Geometry::Point(halfThickness,-halfThickness, 0));
-            vh3 = g.add_vertex(Geometry::Point(-halfThickness,halfThickness, 0));
-            vh4 = g.add_vertex(Geometry::Point(halfThickness,halfThickness, 0));
+            vh1 = g.add_vertex(Geometry::Point(-halfThickness, -halfThickness, 0));
+            vh2 = g.add_vertex(Geometry::Point(halfThickness, -halfThickness, 0));
+            vh3 = g.add_vertex(Geometry::Point(-halfThickness, halfThickness, 0));
+            vh4 = g.add_vertex(Geometry::Point(halfThickness, halfThickness, 0));
 
             g.add_face(vh3, vh2, vh1);
             g.add_face(vh4, vh2, vh3);
 
-            vh5 = g.add_vertex(Geometry::Point(-halfThickness,-halfThickness, size));
-            vh6 = g.add_vertex(Geometry::Point(halfThickness,-halfThickness, size));
-            vh7 = g.add_vertex(Geometry::Point(-halfThickness,halfThickness, size));
-            vh8 = g.add_vertex(Geometry::Point(halfThickness,halfThickness, size));
+            vh5 = g.add_vertex(Geometry::Point(-halfThickness, -halfThickness, size));
+            vh6 = g.add_vertex(Geometry::Point(halfThickness, -halfThickness, size));
+            vh7 = g.add_vertex(Geometry::Point(-halfThickness, halfThickness, size));
+            vh8 = g.add_vertex(Geometry::Point(halfThickness, halfThickness, size));
 
 
             g.add_face(vh5, vh6, vh7);
@@ -352,6 +395,17 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
             return addedVertices;
         }
 
+        std::vector<Geometry::VertexHandle> addLine(Geometry &g, double size, Geometry::Point origin, Geometry::Point dest)
+        {
+            Geometry::VertexHandle vh1 = g.add_vertex(origin);
+            Geometry::VertexHandle vh2 = g.add_vertex(origin);
+            Geometry::VertexHandle vh3 = g.add_vertex(origin + (dest - origin) * size);
+
+            g.add_face(vh1, vh2, vh3);
+            return {vh1, vh2, vh3};
+        }
+
+
         Geometry decimateGeometry(Geometry g, double ratio) {
             typedef OpenMesh::Decimater::DecimaterT<Geometry> Decimator;
             typedef OpenMesh::Decimater::ModQuadricT<Geometry>::Handle QuadModule;
@@ -366,6 +420,16 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
             g.garbage_collection();
             return g;
+        }
+
+        Geometry::Point pointFromVector(const Eigen::Vector3d &v)
+        {
+            return Geometry::Point(v(0), v(1), v(2));
+        }
+
+        Eigen::Vector3d vectorFromPoint(const Geometry::Point &p)
+        {
+            return Eigen::Vector3d(p[0], p[1], p[2]);
         }
     }
 

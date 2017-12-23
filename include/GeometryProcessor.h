@@ -55,6 +55,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         void processGeometry(GPP::Geometry &g);
 
         void getResultingGeometry(Geometry &g) const;
+        void getAdditionalResultingGeometries(std::vector<Geometry> &otherOutputs) const;
+
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

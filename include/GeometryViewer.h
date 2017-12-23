@@ -57,6 +57,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
 
         void launch(std::function<void()> callback);
         void updateGui();
+
+        void quit();
     };
 
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

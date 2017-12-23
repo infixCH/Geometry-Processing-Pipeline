@@ -62,4 +62,8 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         g = mStages.back()->output();
     }
 
+    void GeometryProcessor::getAdditionalResultingGeometries(std::vector<Geometry> &otherOutputs) const {
+        otherOutputs = mStages.back()->otherOutputs();
+    }
+
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

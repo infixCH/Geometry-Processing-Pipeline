@@ -44,8 +44,13 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         return mOutputGeometry;
     }
 
+    const std::vector<Geometry>& AbstractStage::otherOutputs() const {
+        return mOtherOutputs;
+    }
+
     void AbstractStage::clearStage() {
         mGuiEntries.clear();
+        mOtherOutputs.clear();
         mInputGeometry = mOutputGeometry = Geometry();
     }
 

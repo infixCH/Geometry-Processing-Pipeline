@@ -93,4 +93,9 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         mViewer.screen->performLayout();
     }
 
+    void GeometryViewer::quit(){
+        glfwSetWindowShouldClose(mViewer.window, 1);
+    }
+
+
 GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_END

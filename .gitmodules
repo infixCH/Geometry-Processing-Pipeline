@@ -10,3 +10,6 @@
 [submodule "external/nanoflann"]
 	path = external/nanoflann
 	url = git@github.com:jlblancoc/nanoflann.git
+[submodule "external/cork"]
+	path = external/cork
+	url = https://github.com/gilbo/cork.git

@@ -116,7 +116,7 @@ GEOMETRY_PROCESSING_PIPELINE_NAMESPACE_START
         }
     }
 
-    void Geometry::saveGeometry(std::string &pathToObj, bool &status) {
+    void Geometry::saveGeometry(std::string pathToObj, bool &status) const {
 
         status = igl::writeOBJ(pathToObj, V(), F());
 

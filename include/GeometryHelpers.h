@@ -51,6 +51,8 @@ namespace GeometryHelpers {
     void findLocalMinimas(const Geometry &g,
                           std::unordered_set<Geometry::VertexHandle> &localMinimas);
 
+    Geometry mergeGeometries(const Geometry &g1, const Geometry &g2);
+
     void add4PointPlane(Geometry &g,
                         Geometry::Point p1,
                         Geometry::Point p2,
@@ -63,7 +65,13 @@ namespace GeometryHelpers {
 
     std::vector<Geometry::VertexHandle>  AddCoordinateAxis(Geometry &g, double size);
 
+    std::vector<Geometry::VertexHandle> addLine(Geometry &g, double size, Geometry::Point origin, Geometry::Point dest);
+
+
     Geometry decimateGeometry(Geometry g, double ratio);
+
+    Geometry::Point pointFromVector(const Eigen::Vector3d &v);
+    Eigen::Vector3d vectorFromPoint(const Geometry::Point &p);
 
 }
 

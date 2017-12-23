@@ -29,10 +29,20 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(external/OpenMesh)
 include_directories(${OPENMESH_INCLUDE_DIRS})
 
+find_path(GMP_INCLUDE_DIR gmp.h gmpxx.h
+        PATHS ${GMP_PREFIX}/include /usr/include /usr/local/include )
+find_library(GMP_LIBRARY NAMES gmp libgmp libgmpxx
+        PATHS ${GMP_PREFIX}/lib /usr/lib /usr/local/lib)
+
+include_directories(GMP_INCLUDE_DIR)
+
+find_library(CORK_LIBRARY cork ${PROJECT_SOURCE_DIR}/external/cork/lib)
+
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use OpenGL GLFW"    ON)
 option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 set(LIBIGL_WITH_NANOGUI ON CACHE FORCE "Use Nanogui menu")
+set(LIBIGL_WITH_EMBREE BOOL ON CACHE FORCE "Use Embree")
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/external/libigl/shared/cmake" "libigl")
 include_directories(${LIBIGL_INCLUDE_DIRS})
@@ -46,9 +56,15 @@ set(GPP_INCLUDE_DIRS
         ${LIBIGL_INCLUDE_DIRS}
         ${OPENMESH_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/external/nanoflann/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/cork/include
         PARENT_SCOPE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/nanoflann/include)
+
+# include cork for boolean operations
+include_directories(
+        external/cork/include
+)
 
 set(SOURCE_FILES
 
@@ -60,6 +76,7 @@ set(SOURCE_FILES
         GUIEntry.cpp
         GeometryHelpers.cpp
         PointCloudMatrixAdaptor.cpp
+        BooleanOperation.cpp
 
         include/macros.h
 
@@ -72,22 +89,27 @@ set(SOURCE_FILES
         include/GeometryHelpers.h
         include/PointCloudMatrixAdaptor.h
         include/PointCloudHelpers.h
+        include/BooleanOperation.h
         )
 
-add_library(${PROJECT_NAME} ${SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME}
-    ${LIBIGL_LIBRARIES}
-    ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
-    ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
-    ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
-    ${OPENMESH_LIBRARIES})
+        ${LIBIGL_LIBRARIES}
+        ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
+        ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
+        ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
+        ${OPENMESH_LIBRARIES}
+        ${CORK_LIBRARY}
+        ${GMP_LIBRARY}
+        ${LIBIGL_EMBREE_EXTRA_LIBRARIES}
+        ${LIBIGL_EXTRA_LIBRARIES})
 
 #testing
 set(gtest_source
         tests/TestPointCloudMatrixAdaptor.cpp
         tests/run_GPP_tests.cpp
-        ${SOURCE_FILES})
+        ${SOURCE_FILES} tests/TestBooleanOperations.cpp)
 
 add_executable(run_GPP_gtests ${gtest_source})
 
@@ -97,4 +119,6 @@ target_link_libraries(run_GPP_gtests
         ${LIBIGL_VIEWER_EXTRA_LIBRARIES}
         ${LIBIGL_OPENGL_EXTRA_LIBRARIES}
         ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES}
-        ${OPENMESH_LIBRARIES})
+        ${OPENMESH_LIBRARIES}
+        ${CORK_LIBRARY}
+        ${GMP_LIBRARY})
